@@ -86,28 +86,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 // ApplyTransactions returns the generated receipts and vm logs during the
 // execution of the state transition phase.
 func ApplyTransaction(config *ChainConfig, bc *BlockChain, gp *GasPool, statedb *state.StateDB, header *types.Header, tx *types.Transaction, usedGas *big.Int, cfg vm.Config) (*types.Receipt, vm.Logs, *big.Int, error) {
-	_, gas, err := ApplyMessage(NewEnv(statedb, config, bc, tx, header, cfg), tx, gp)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	// Update the state with pending changes
-	usedGas.Add(usedGas, gas)
-	receipt := types.NewReceipt(statedb.IntermediateRoot().Bytes(), usedGas)
-	receipt.TxHash = tx.Hash()
-	receipt.GasUsed = new(big.Int).Set(gas)
-	if MessageCreatesContract(tx) {
-		from, _ := tx.From()
-		receipt.ContractAddress = crypto.CreateAddress(from, tx.Nonce())
-	}
-
-	logs := statedb.GetLogs(tx.Hash())
-	receipt.Logs = logs
-	receipt.Bloom = types.CreateBloom(types.Receipts{receipt})
-
-	glog.V(logger.Debug).Infoln(receipt)
-
-	return receipt, logs, gas, err
+	return nil, nil, nil, err
 }
 
 // AccumulateRewards credits the coinbase of the given block with the
